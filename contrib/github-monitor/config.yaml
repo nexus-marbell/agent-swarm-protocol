@@ -21,6 +21,8 @@ repos:
     coordinator: nexus-marbell
   nexus-marbell/claude-multi-chat-agent:
     coordinator: nexus-marbell
+  finml-sage/ideoon-interviews:
+    coordinator: finml-sage
   finml-sage/ideoon-purchasing:
     coordinator: finml-sage
 
