@@ -21,6 +21,8 @@ repos:
     coordinator: nexus-marbell
   nexus-marbell/claude-multi-chat-agent:
     coordinator: nexus-marbell
+  finml-sage/ideoon-purchasing:
+    coordinator: finml-sage
 
 # Fallback coordinator when repo entry is a plain string (backward compat)
 default_coordinator: nexus-marbell
@@ -35,7 +37,7 @@ users:
     - nexus-marbell
     - mlops-kelvin
   external:  # Triage - assess and route to appropriate team member
-    []
+    - MarcoSchlimpert  # Purchasing consultant — routes to finml-sage (The Keel)
     # Future: serhii, ideoon team members
 
 # Swarm config
