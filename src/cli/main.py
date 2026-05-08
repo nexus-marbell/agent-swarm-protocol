@@ -13,6 +13,7 @@ from src.cli.commands.join import join_command
 from src.cli.commands.kick import kick_command
 from src.cli.commands.leave import leave_command
 from src.cli.commands.list_swarms import list_command
+from src.cli.commands.members import members_command
 from src.cli.commands.messages import messages_command
 from src.cli.commands.mute import mute_command
 from src.cli.commands.purge import purge_command
@@ -102,6 +103,20 @@ def list_swarms(
 ) -> None:
     """List swarms this agent belongs to."""
     list_command(swarm_id, members, json_flag)
+
+
+@app.command("members")
+def members(
+    swarm_id: str = typer.Option(
+        None, "-s", "--swarm", "--swarm-id", help="Swarm ID (UUID)"
+    ),
+    health: bool = typer.Option(
+        False, "--health", help="TLS+/health probe each member endpoint in parallel",
+    ),
+    json_flag: bool = typer.Option(False, "--json", help="Output as JSON"),
+) -> None:
+    """List members of a swarm and their endpoints."""
+    members_command(swarm_id, health, json_flag)
 
 
 @app.command("purge")
