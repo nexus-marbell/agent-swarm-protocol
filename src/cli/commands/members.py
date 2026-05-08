@@ -13,7 +13,7 @@ import typer
 from rich.console import Console
 
 from src.cli.output import format_error, format_table, json_output
-from src.cli.utils import ConfigManager, resolve_swarm_id, SwarmIdError
+from src.cli.utils import ConfigManager, SwarmIdError, resolve_swarm_id
 from src.cli.utils.config import ConfigError
 from src.state import DatabaseManager, MembershipRepository
 from src.state.models import SwarmMember

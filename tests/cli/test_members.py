@@ -59,8 +59,12 @@ class TestMembersListing:
             _setup_config(tmpdir, monkeypatch)
 
             members = [
-                _make_member("alice", "https://alice.example.com/swarm", "AAAAbbbbCCCCddddEEEE"),
-                _make_member("bob", "https://bob.example.com/swarm", "FFFFggggHHHHiiiiJJJJ"),
+                _make_member(
+                    "alice", "https://alice.example.com/swarm", "AAAAbbbbCCCCddddEEEE"
+                ),
+                _make_member(
+                    "bob", "https://bob.example.com/swarm", "FFFFggggHHHHiiiiJJJJ"
+                ),
             ]
             with patch(
                 "src.cli.commands.members._load_members",
@@ -88,7 +92,9 @@ class TestMembersJsonOutput:
             _setup_config(tmpdir, monkeypatch)
 
             full_pk = "AAAAbbbbCCCCddddEEEEffffGGGGhhhh"
-            members = [_make_member("alice", "https://alice.example.com/swarm", full_pk)]
+            members = [
+                _make_member("alice", "https://alice.example.com/swarm", full_pk)
+            ]
             with patch(
                 "src.cli.commands.members._load_members",
                 new=AsyncMock(return_value=members),
@@ -202,10 +208,13 @@ class TestMembersHealthFlag:
                     assert url.endswith("/health")
                     return _MockResponse(200)
 
-            with patch(
-                "src.cli.commands.members._load_members",
-                new=AsyncMock(return_value=members),
-            ), patch("src.cli.commands.members.httpx.AsyncClient", _MockClient):
+            with (
+                patch(
+                    "src.cli.commands.members._load_members",
+                    new=AsyncMock(return_value=members),
+                ),
+                patch("src.cli.commands.members.httpx.AsyncClient", _MockClient),
+            ):
                 result = runner.invoke(app, ["members", "--health", "--json"])
 
             assert result.exit_code == 0
@@ -248,10 +257,13 @@ class TestMembersHealthFlag:
                         raise httpx.ConnectError("SSL: CERTIFICATE_VERIFY_FAILED")
                     raise AssertionError(f"Unexpected url {url}")
 
-            with patch(
-                "src.cli.commands.members._load_members",
-                new=AsyncMock(return_value=members),
-            ), patch("src.cli.commands.members.httpx.AsyncClient", _MockClient):
+            with (
+                patch(
+                    "src.cli.commands.members._load_members",
+                    new=AsyncMock(return_value=members),
+                ),
+                patch("src.cli.commands.members.httpx.AsyncClient", _MockClient),
+            ):
                 result = runner.invoke(app, ["members", "--health", "--json"])
 
             assert result.exit_code == 0
@@ -284,10 +296,13 @@ class TestMembersHealthFlag:
                 async def get(self, url: str) -> _Resp:
                     return _Resp()
 
-            with patch(
-                "src.cli.commands.members._load_members",
-                new=AsyncMock(return_value=members),
-            ), patch("src.cli.commands.members.httpx.AsyncClient", _MockClient):
+            with (
+                patch(
+                    "src.cli.commands.members._load_members",
+                    new=AsyncMock(return_value=members),
+                ),
+                patch("src.cli.commands.members.httpx.AsyncClient", _MockClient),
+            ):
                 result = runner.invoke(app, ["members", "--health"])
 
             assert result.exit_code == 0
