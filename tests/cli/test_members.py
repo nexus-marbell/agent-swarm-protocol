@@ -7,7 +7,6 @@ from tempfile import TemporaryDirectory
 from unittest.mock import AsyncMock, patch
 
 import httpx
-import pytest
 import yaml
 from typer.testing import CliRunner
 

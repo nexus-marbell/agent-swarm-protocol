@@ -24,7 +24,7 @@ _HEALTH_TIMEOUT = 5.0
 _PUBKEY_TRUNC_CHARS = 8
 
 
-async def _load_members(swarm_id: UUID) -> list[SwarmMember]:
+async def _load_members(swarm_id: UUID) -> list[SwarmMember] | None:
     """Load members for ``swarm_id`` via the membership repository.
 
     Returns an empty list when the agent is a member of the swarm but the
