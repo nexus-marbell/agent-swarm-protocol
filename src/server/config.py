@@ -11,6 +11,15 @@ _RECOGNISED_BOOL_VALUES = frozenset(
     ("1", "true", "yes", "0", "false", "no")
 )
 
+# Default wake session-state file. Resolved against the *running user's*
+# home so the /api/wake handler can always read/write it. A hardcoded
+# ``/root/.swarm/session.json`` (the previous default) is unreadable by a
+# non-root service user: ``Path.exists()`` raises PermissionError when the
+# process cannot traverse ``/root``, which crashes the wake handler with a
+# 500 and silently defeats every tmux/zellij notification while messages
+# still return 200. See agent-swarm-protocol wake-notification incident.
+_DEFAULT_SESSION_FILE = str(Path.home() / ".swarm" / "session.json")
+
 
 @dataclass(frozen=True)
 class AgentConfig:
@@ -58,7 +67,7 @@ class WakeEndpointConfig:
     enabled: bool = True
     invoke_method: str = "noop"
     secret: str = ""
-    session_file: str = "/root/.swarm/session.json"
+    session_file: str = _DEFAULT_SESSION_FILE
     session_timeout_minutes: int = 30
     tmux_target: str = ""
 
@@ -157,7 +166,7 @@ def load_config_from_env() -> ServerConfig:
             invoke_method=invoke_method,
             secret=wake_ep_secret,
             session_file=os.environ.get(
-                "WAKE_EP_SESSION_FILE", "/root/.swarm/session.json"
+                "WAKE_EP_SESSION_FILE", _DEFAULT_SESSION_FILE
             ),
             session_timeout_minutes=int(
                 os.environ.get("WAKE_EP_SESSION_TIMEOUT", "30")
