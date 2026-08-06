@@ -224,6 +224,27 @@ class TestWakeEndpointSessionCheck:
         assert response.status_code == 202
         assert response.json()["status"] == "invoked"
 
+    def test_invokes_when_session_read_fails(self, tmp_path: Path) -> None:
+        """A session-read failure must not disable the wake -- still invokes.
+
+        Regression guard for the wake-notification incident: the previous
+        default session file ``/root/.swarm/session.json`` is unreadable by
+        a non-root service user, so ``get_current_session()`` raised
+        PermissionError and the handler 500-ed -- silently dropping every
+        tmux notification while messages still returned 200. The best-effort
+        duplicate-invocation guard must fail open toward notifying.
+        """
+        config = _make_config(tmp_path, invoke_method="noop")
+        with patch.object(
+            SessionManager,
+            "get_current_session",
+            side_effect=PermissionError("session file unreadable"),
+        ):
+            with TestClient(create_app(config)) as client:
+                response = client.post("/api/wake", json=_wake_payload())
+        assert response.status_code == 202
+        assert response.json()["status"] == "invoked"
+
 
 class TestWakeEndpointAuth:
     """Shared secret authentication."""
@@ -309,7 +330,7 @@ class TestWakeEndpointConfigDefaults:
         assert cfg.enabled is True
         assert cfg.invoke_method == "noop"
         assert cfg.secret == ""
-        assert cfg.session_file == "/root/.swarm/session.json"
+        assert cfg.session_file == str(Path.home() / ".swarm" / "session.json")
         assert cfg.session_timeout_minutes == 30
         assert cfg.tmux_target == ""
 

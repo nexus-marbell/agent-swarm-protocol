@@ -118,8 +118,22 @@ def create_wake_router(
                 ).model_dump(),
             )
 
-        # Session check: avoid double-invocation (returns 200, not 202)
-        session = session_manager.get_current_session()
+        # Session check: avoid double-invocation (returns 200, not 202).
+        # This is a best-effort duplicate-invocation guard. It must NEVER be
+        # able to disable the primary function -- notifying the agent. If
+        # reading session state fails (e.g. an unreadable or corrupt session
+        # file), log loudly and proceed to invoke rather than 500-ing the
+        # whole wake path (which would silently drop the notification while
+        # the message still returns 200).
+        try:
+            session = session_manager.get_current_session()
+        except Exception as exc:
+            logger.error(
+                "Session state unreadable (%s); proceeding to invoke. "
+                "Duplicate-invocation guard disabled for this wake.",
+                exc,
+            )
+            session = None
         if session is not None and session.state == SessionState.ACTIVE:
             if session_manager.should_resume():
                 logger.info(
